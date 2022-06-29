@@ -20,14 +20,22 @@ namespace VehicleManagementAPI.Services.VehicleServices
         public async Task<ServiceResponse<List<GetVehicleDto>>> AddVehicle(AddVehicleDto newVehicle)
         {
             var response = new ServiceResponse<List<GetVehicleDto>>();
-            Vehicle vehicle = _mapper.Map<Vehicle>(newVehicle);
 
-            _context.Vehicles.Add(vehicle);
-            await _context.SaveChangesAsync();
+            try
+            {
+                Vehicle vehicle = _mapper.Map<Vehicle>(newVehicle);
 
-            response.Data = await _context.Vehicles.Select(v => _mapper.Map<GetVehicleDto>(v)).ToListAsync();
-            response.Message = "Vehicle added successfully.";
+                _context.Vehicles.Add(vehicle);
+                await _context.SaveChangesAsync();
 
+                response.Data = await _context.Vehicles.Select(v => _mapper.Map<GetVehicleDto>(v)).ToListAsync();
+                response.Message = "Vehicle added successfully.";
+            }
+            catch(Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
             return response;
         }
 
