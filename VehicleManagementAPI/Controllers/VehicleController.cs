@@ -29,7 +29,7 @@ namespace VehicleManagementAPI.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<ServiceResponse<List<Vehicle>>>> GetVehicles()
         {
-            return Ok(_vehicleService.GetAllVehicles());
+            return Ok(await _vehicleService.GetAllVehicles());
         }
 
         // GET: api/Vehicle/5
@@ -44,7 +44,6 @@ namespace VehicleManagementAPI.Controllers
         }
 
         // PUT: api/Vehicle/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> EditVehicle(int id, UpdateVehicleDto updatedVehicle)
         {

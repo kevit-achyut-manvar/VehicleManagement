@@ -59,7 +59,7 @@ namespace VehicleManagementAPI.Services.VehicleServices
             var dbVehicles = await _context.Vehicles.ToListAsync();
 
             response.Data = dbVehicles.Select(v => _mapper.Map<GetVehicleDto>(v)).ToList();
-            if (dbVehicles == null)
+            if (dbVehicles.Count == 0)
                 response.Message = "No vehicle present.";
 
             return response;
