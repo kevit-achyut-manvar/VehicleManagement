@@ -11,5 +11,6 @@ namespace VehicleManagementAPI.Data
         }
 
         public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<VehicleOwner> VehicleOwners { get; set; }
     }
 }

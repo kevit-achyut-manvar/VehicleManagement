@@ -7,5 +7,6 @@
         public string ModelName { get; set; }
         public int RTONumber { get; set; }
         public VehicleClass Class { get; set; }
+        public VehicleOwner VehicleOwner { get; set; }
     }
 }
