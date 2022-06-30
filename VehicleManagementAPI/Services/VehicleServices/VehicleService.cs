@@ -105,7 +105,7 @@ namespace VehicleManagementAPI.Services.VehicleServices
 
             try
             {
-                Vehicle vehicle = await _context.Vehicles.FirstAsync(v => v.Id == updatedVehicle.Id);
+                Vehicle vehicle = await _context.Vehicles.Include(v => v.VehicleOwner).FirstOrDefaultAsync(v => v.Id == updatedVehicle.Id);
 
                 if (vehicle.VehicleOwner.Id == GetUserId())
                 {
