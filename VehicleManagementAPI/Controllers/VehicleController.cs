@@ -29,14 +29,14 @@ namespace VehicleManagementAPI.Controllers
 
         // GET: api/Vehicle
         [HttpGet("GetAll")]
-        public async Task<ActionResult<ServiceResponse<List<Vehicle>>>> GetVehicles()
+        public async Task<ActionResult<ServiceResponse<List<GetVehicleDto>>>> GetVehicles()
         {
             return Ok(await _vehicleService.GetAllVehicles());
         }
 
         // GET: api/Vehicle/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vehicle>> GetSingleVehicle(int id)
+        public async Task<ActionResult<ServiceResponse<GetVehicleDto>>> GetSingleVehicle(int id)
         {
             var temp = await _vehicleService.GetVehicleById(id);
 
@@ -47,7 +47,7 @@ namespace VehicleManagementAPI.Controllers
 
         // PUT: api/Vehicle/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditVehicle(int id, UpdateVehicleDto updatedVehicle)
+        public async Task<ActionResult<ServiceResponse<GetVehicleDto>>> EditVehicle(int id, UpdateVehicleDto updatedVehicle)
         {
             var temp = await _vehicleService.UpdateVehicle(id, updatedVehicle);
 
@@ -70,7 +70,7 @@ namespace VehicleManagementAPI.Controllers
 
         // DELETE: api/Vehicle/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVehicle(int id)
+        public async Task<ActionResult<ServiceResponse<List<GetVehicleDto>>>> DeleteVehicle(int id)
         {
             var temp = await _vehicleService.DeleteVehicle(id);
 

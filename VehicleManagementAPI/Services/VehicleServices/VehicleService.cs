@@ -59,7 +59,7 @@ namespace VehicleManagementAPI.Services.VehicleServices
                     _context.Vehicles.Remove(vehicle);
                     await _context.SaveChangesAsync();
 
-                    response.Data = await _context.Vehicles.Select(v => _mapper.Map<GetVehicleDto>(v)).ToListAsync();
+                    response.Data = await _context.Vehicles.Where(v => v.VehicleOwner.Id == GetUserId()).Select(v => _mapper.Map<GetVehicleDto>(v)).ToListAsync();
                     response.Message = "Vehicle deleted successfully";
                 }
                 else
@@ -102,6 +102,12 @@ namespace VehicleManagementAPI.Services.VehicleServices
         public async Task<ServiceResponse<GetVehicleDto>> UpdateVehicle(int id, UpdateVehicleDto updatedVehicle)
         {
             var response = new ServiceResponse<GetVehicleDto>();
+
+            if(id != updatedVehicle.Id)
+            {
+                response.Message = "ID field is not same in edit request.";
+                return response;
+            }
 
             try
             {
