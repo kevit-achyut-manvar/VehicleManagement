@@ -6,7 +6,7 @@ namespace VehicleManagementAPI.Dto.Vehicle
     {
         public string CompanyName { get; set; }
         public string ModelName { get; set; }
-        public int RTONumber { get; set; }
+        public string RTONumber { get; set; }
         public VehicleClass Class { get; set; }
     }
 }

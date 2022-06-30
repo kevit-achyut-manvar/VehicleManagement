@@ -107,7 +107,7 @@ namespace VehicleManagementAPI.Data
 
         public async Task<bool> UserExists(string username)
         {
-            if( await _context.VehicleOwners.AnyAsync(x => x.Username.ToLower().Equals(username.ToLower())))
+            if(await _context.VehicleOwners.AnyAsync(x => x.Username.ToLower().Equals(username.ToLower())))
                 return true;
 
             return false;
