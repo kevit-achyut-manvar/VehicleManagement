@@ -103,12 +103,6 @@ namespace VehicleManagementAPI.Services.VehicleServices
         {
             var response = new ServiceResponse<GetVehicleDto>();
 
-            if(id != updatedVehicle.Id)
-            {
-                response.Message = "ID field is not same in edit request.";
-                return response;
-            }
-
             try
             {
                 Vehicle vehicle = await _context.Vehicles.Include(v => v.VehicleOwner).FirstOrDefaultAsync(v => v.Id == updatedVehicle.Id);

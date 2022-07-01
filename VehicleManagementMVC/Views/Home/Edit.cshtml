@@ -1,4 +1,4 @@
-﻿@model VehicleManagementAPI.Models.Vehicle
+﻿@model UpdateVehicleDto
 
 @{
     ViewData["Title"] = "Edit";
@@ -30,9 +30,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="Class" class="control-label"></label>
-                <select asp-for="Class" class="form-control"></select>
+                <select asp-for="@Model.Class" class="form-control" asp-items="Html.GetEnumSelectList<VehicleClass>()"></select>
                 <span asp-validation-for="Class" class="text-danger"></span>
-            </div>
+            </div><br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

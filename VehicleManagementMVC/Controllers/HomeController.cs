@@ -137,7 +137,7 @@ namespace VehicleManagementMVC.Controllers
         }
 
         // GET: HomeController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
             return View();
         }
@@ -145,11 +145,27 @@ namespace VehicleManagementMVC.Controllers
         // POST: HomeController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, GetVehicleDto vehicle)
+        public async Task<ActionResult> Edit(int id, UpdateVehicleDto updatedVehicle)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(baseAddress);
+                    client.DefaultRequestHeaders.Add("Authorization", userToken);
+
+                    HttpResponseMessage getData = await client.PutAsJsonAsync("api/Vehicle/" + id, updatedVehicle);
+
+                    if (getData.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction(nameof(Details));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error........");
+                        return View();
+                    }
+                }
             }
             catch
             {

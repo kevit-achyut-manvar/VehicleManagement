@@ -51,10 +51,8 @@ namespace VehicleManagementAPI.Controllers
         {
             var temp = await _vehicleService.UpdateVehicle(id, updatedVehicle);
 
-            if (id != updatedVehicle.Id)
-            {
+            if(id != updatedVehicle.Id)
                 return BadRequest(temp);
-            }
             
             if (temp.Data == null)
                 return NotFound(temp);
