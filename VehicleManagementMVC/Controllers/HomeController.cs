@@ -139,13 +139,31 @@ namespace VehicleManagementMVC.Controllers
         // GET: HomeController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            var data = new ServiceResponse<UpdateVehicleDto>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseAddress);
+                client.DefaultRequestHeaders.Add("Authorization", userToken);
+
+                HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = getData.Content.ReadAsStringAsync().Result;
+                    data = JsonConvert.DeserializeObject<ServiceResponse<UpdateVehicleDto>>(results);
+                }
+                else
+                {
+                    Console.WriteLine("Error in consuming web API.");
+                }
+            }
+            return View(data);
         }
 
         // POST: HomeController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, UpdateVehicleDto updatedVehicle)
+        public async Task<ActionResult> Edit(int id, ServiceResponse<UpdateVehicleDto> updatedVehicle)
         {
             try
             {
@@ -158,7 +176,7 @@ namespace VehicleManagementMVC.Controllers
 
                     if (getData.IsSuccessStatusCode)
                     {
-                        return RedirectToAction(nameof(Details));
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {

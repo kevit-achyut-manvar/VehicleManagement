@@ -47,11 +47,11 @@ namespace VehicleManagementAPI.Controllers
 
         // PUT: api/Vehicle/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ServiceResponse<GetVehicleDto>>> EditVehicle(int id, UpdateVehicleDto updatedVehicle)
+        public async Task<ActionResult<ServiceResponse<GetVehicleDto>>> EditVehicle(int id, ServiceResponse<UpdateVehicleDto> updatedVehicle)
         {
             var temp = await _vehicleService.UpdateVehicle(id, updatedVehicle);
 
-            if(id != updatedVehicle.Id)
+            if(id != updatedVehicle.Data.Id)
                 return BadRequest(temp);
             
             if (temp.Data == null)

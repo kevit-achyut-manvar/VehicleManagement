@@ -99,20 +99,20 @@ namespace VehicleManagementAPI.Services.VehicleServices
             return response;
         }
 
-        public async Task<ServiceResponse<GetVehicleDto>> UpdateVehicle(int id, UpdateVehicleDto updatedVehicle)
+        public async Task<ServiceResponse<GetVehicleDto>> UpdateVehicle(int id, ServiceResponse<UpdateVehicleDto> updatedVehicle)
         {
             var response = new ServiceResponse<GetVehicleDto>();
 
             try
             {
-                Vehicle vehicle = await _context.Vehicles.Include(v => v.VehicleOwner).FirstOrDefaultAsync(v => v.Id == updatedVehicle.Id);
+                Vehicle vehicle = await _context.Vehicles.Include(v => v.VehicleOwner).FirstOrDefaultAsync(v => v.Id == updatedVehicle.Data.Id);
 
                 if (vehicle.VehicleOwner.Id == GetUserId())
                 {
-                    vehicle.ModelName = updatedVehicle.ModelName;
-                    vehicle.RTONumber = updatedVehicle.RTONumber;
-                    vehicle.CompanyName = updatedVehicle.CompanyName;
-                    vehicle.Class = updatedVehicle.Class;
+                    vehicle.ModelName = updatedVehicle.Data.ModelName;
+                    vehicle.RTONumber = updatedVehicle.Data.RTONumber;
+                    vehicle.CompanyName = updatedVehicle.Data.CompanyName;
+                    vehicle.Class = updatedVehicle.Data.Class;
 
                     await _context.SaveChangesAsync();
 
