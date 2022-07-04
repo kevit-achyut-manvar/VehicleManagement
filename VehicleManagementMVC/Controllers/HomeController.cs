@@ -15,6 +15,13 @@ namespace VehicleManagementMVC.Controllers
             httpClient.DefaultRequestHeaders.Add("Authorization", "bearer " + token);
         }
 
+        //GET: HomeController/Logout
+        public ActionResult Logout()
+        {
+            TokenManagement.userToken = string.Empty;
+            return RedirectToAction(nameof(Login));
+        }
+
         // GET: HomeController/Register
         public ActionResult Register()
         {
@@ -114,9 +121,8 @@ namespace VehicleManagementMVC.Controllers
                 {
                     Console.WriteLine("Error in consuming web API.");
                 }
-                ViewData.Model = data;
             }
-            return View();
+            return View(data);
         }
 
         // GET: HomeController/Details/5
