@@ -9,7 +9,89 @@ namespace VehicleManagementMVC.Controllers
     public class HomeController : Controller
     {
         string baseAddress = "https://localhost:7191/";
-        string userToken = "bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI1IiwibmFtZSI6IkFjaHl1dCIsIm5iZiI6MTY1NjY1MTA2OCwiZXhwIjoxNjU2NzM3NDY4LCJpYXQiOjE2NTY2NTEwNjh9.SVBCGMimRebSCWKdOBCicAnO813gE-oxqZDLQTnzGkmXu006SBltW7EtAaQEGNPw9UwJlsBzGy5kL1MZR8Lu9A";
+
+        private void addToken(HttpClient httpClient, string token)
+        {
+            httpClient.DefaultRequestHeaders.Add("Authorization", "bearer " + token);
+        }
+
+        // GET: HomeController/Register
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: HomeController/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Register(VehicleOwnerRegister ownerRegister)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(baseAddress);
+
+                    HttpResponseMessage getData = await client.PostAsJsonAsync("api/Auth/Register", ownerRegister);
+
+                    if (getData.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction(nameof(Login));
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nError.......");
+                        return View();
+                    }
+                }
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: HomeController/Login
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: HomeController/Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Login(VehicleOwnerLogin ownerLogin)
+        {
+            var data = new ServiceResponse<string>();
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(baseAddress);
+
+                    HttpResponseMessage getData = await client.PostAsJsonAsync("api/Auth/Login", ownerLogin);
+
+                    if (getData.IsSuccessStatusCode)
+                    {
+                        string results = getData.Content.ReadAsStringAsync().Result;
+                        data = JsonConvert.DeserializeObject<ServiceResponse<string>>(results);
+                        TokenManagement.userToken = data.Data;
+                        addToken(client, TokenManagement.userToken);
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nError.......");
+                        return View();
+                    }
+                }
+            }
+            catch
+            {
+                return View();
+            }
+        }
 
         // GET: HomeController
         public async Task<IActionResult> Index()
@@ -19,7 +101,7 @@ namespace VehicleManagementMVC.Controllers
             using(var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                client.DefaultRequestHeaders.Add("Authorization", userToken);
+                addToken(client, TokenManagement.userToken);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/GetAll");
 
@@ -44,7 +126,7 @@ namespace VehicleManagementMVC.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                client.DefaultRequestHeaders.Add("Authorization", userToken);
+                addToken(client, TokenManagement.userToken);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
 
@@ -78,7 +160,7 @@ namespace VehicleManagementMVC.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseAddress);
-                    client.DefaultRequestHeaders.Add("Authorization", userToken);
+                    addToken(client, TokenManagement.userToken);
 
                     HttpResponseMessage getData = await client.PostAsJsonAsync<AddVehicleDto>("api/Vehicle/", addVehicle);
 
@@ -115,7 +197,7 @@ namespace VehicleManagementMVC.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseAddress);
-                    client.DefaultRequestHeaders.Add("Authorization", userToken);
+                    addToken(client, TokenManagement.userToken);
 
                     HttpResponseMessage getData = await client.DeleteAsync("api/Vehicle/" + id);
 
@@ -143,7 +225,7 @@ namespace VehicleManagementMVC.Controllers
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                client.DefaultRequestHeaders.Add("Authorization", userToken);
+                addToken(client, TokenManagement.userToken);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
 
@@ -170,7 +252,7 @@ namespace VehicleManagementMVC.Controllers
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseAddress);
-                    client.DefaultRequestHeaders.Add("Authorization", userToken);
+                    addToken(client, TokenManagement.userToken);
 
                     HttpResponseMessage getData = await client.PutAsJsonAsync("api/Vehicle/" + id, updatedVehicle);
 
@@ -190,5 +272,10 @@ namespace VehicleManagementMVC.Controllers
                 return View();
             }
         }
+    }
+
+    public class TokenManagement
+    {
+        public static string userToken;
     }
 }
