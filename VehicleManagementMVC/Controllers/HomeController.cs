@@ -153,7 +153,7 @@ namespace VehicleManagementMVC.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("Error in consuming web API.");
+                    return View("Error");
                 }
                 ViewData.Model = data;
             }
