@@ -1,0 +1,19 @@
+﻿<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<h1>View</h1>
+
+<input type="button" value="Click Me" onclick="BtnClick()"/>
+
+<script>
+    function BtnClick() {
+        $.ajax({
+            url: "/Home/Index",
+            method: "GET",
+            success: function(data) {
+                console.log(data)
+            },
+            error: function(err) {
+                console.log(err)
+            }
+        })
+    }
+</script>

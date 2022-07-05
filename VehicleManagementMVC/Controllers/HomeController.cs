@@ -19,7 +19,7 @@ namespace VehicleManagementMVC.Controllers
         //GET: HomeController/Logout
         public ActionResult Logout()
         {
-            TokenManagement.userToken = string.Empty;
+            HttpContext.Session.Clear();
             return RedirectToAction(nameof(Login));
         }
 
@@ -84,8 +84,8 @@ namespace VehicleManagementMVC.Controllers
                     {
                         string results = getData.Content.ReadAsStringAsync().Result;
                         data = JsonConvert.DeserializeObject<ServiceResponse<string>>(results);
-                        TokenManagement.userToken = data.Data;
-                        addToken(client, TokenManagement.userToken);
+                        HttpContext.Session.SetString("Authorization", data.Data);
+                        addToken(client, HttpContext.Session.GetString("Authorization"));
                         return RedirectToAction(nameof(Index));
                     }
                     else
@@ -106,10 +106,14 @@ namespace VehicleManagementMVC.Controllers
         {
             var data = new ServiceResponse<List<GetVehicleDto>>();
 
-            using(var client = new HttpClient())
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
+            using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                addToken(client, TokenManagement.userToken);
+                addToken(client, token);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/GetAll");
 
@@ -120,7 +124,7 @@ namespace VehicleManagementMVC.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("Error in consuming web API.");
+                    return View("Error");
                 }
             }
             return View(data);
@@ -130,10 +134,15 @@ namespace VehicleManagementMVC.Controllers
         public async Task<ActionResult> Details(int id)
         {
             var data = new ServiceResponse<GetVehicleDto>();
+
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                addToken(client, TokenManagement.userToken);
+                addToken(client, token);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
 
@@ -162,12 +171,16 @@ namespace VehicleManagementMVC.Controllers
         [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Create(AddVehicleDto addVehicle)
         {
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseAddress);
-                    addToken(client, TokenManagement.userToken);
+                    addToken(client, token);
 
                     HttpResponseMessage getData = await client.PostAsJsonAsync<AddVehicleDto>("api/Vehicle/", addVehicle);
 
@@ -177,8 +190,7 @@ namespace VehicleManagementMVC.Controllers
                     }
                     else
                     {
-                        Console.WriteLine("Error........");
-                        return View();
+                        return View("Error");
                     }   
                 }  
             }
@@ -192,10 +204,15 @@ namespace VehicleManagementMVC.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var data = new ServiceResponse<GetVehicleDto>();
+
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                addToken(client, TokenManagement.userToken);
+                addToken(client, token);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
 
@@ -206,7 +223,7 @@ namespace VehicleManagementMVC.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("Error in consuming web API.");
+                    return View("Error");
                 }
             }
             return View(data);
@@ -217,12 +234,16 @@ namespace VehicleManagementMVC.Controllers
         [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Delete(int id, GetVehicleDto vehicle)
         {
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseAddress);
-                    addToken(client, TokenManagement.userToken);
+                    addToken(client, token);
 
                     HttpResponseMessage getData = await client.DeleteAsync("api/Vehicle/" + id);
 
@@ -232,8 +253,7 @@ namespace VehicleManagementMVC.Controllers
                     }
                     else
                     {
-                        Console.WriteLine("Error........");
-                        return View();
+                        return View("Error");
                     }
                 }
             }
@@ -247,10 +267,15 @@ namespace VehicleManagementMVC.Controllers
         public async Task<ActionResult> Edit(int id)
         {
             var data = new ServiceResponse<UpdateVehicleDto>();
+
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseAddress);
-                addToken(client, TokenManagement.userToken);
+                addToken(client, token);
 
                 HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
 
@@ -261,7 +286,7 @@ namespace VehicleManagementMVC.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("Error in consuming web API.");
+                    return View("Error");
                 }
             }
             return View(data);
@@ -272,12 +297,16 @@ namespace VehicleManagementMVC.Controllers
         [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Edit(int id, ServiceResponse<UpdateVehicleDto> updatedVehicle)
         {
+            var token = HttpContext.Session.GetString("Authorization");
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
             try
             {
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri(baseAddress);
-                    addToken(client, TokenManagement.userToken);
+                    addToken(client, token);
 
                     HttpResponseMessage getData = await client.PutAsJsonAsync("api/Vehicle/" + id, updatedVehicle);
 
@@ -287,8 +316,7 @@ namespace VehicleManagementMVC.Controllers
                     }
                     else
                     {
-                        Console.WriteLine("Error........");
-                        return View();
+                        return View("Error");
                     }
                 }
             }
@@ -297,10 +325,5 @@ namespace VehicleManagementMVC.Controllers
                 return View();
             }
         }
-    }
-
-    public class TokenManagement
-    {
-        public static string userToken;
     }
 }
