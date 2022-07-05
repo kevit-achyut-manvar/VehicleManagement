@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using VehicleManagementMVC.Models;
@@ -9,7 +10,7 @@ namespace VehicleManagementMVC.Controllers
     public class HomeController : Controller
     {
         string baseAddress = "https://localhost:7191/";
-
+        
         private void addToken(HttpClient httpClient, string token)
         {
             httpClient.DefaultRequestHeaders.Add("Authorization", "bearer " + token);
@@ -30,7 +31,7 @@ namespace VehicleManagementMVC.Controllers
 
         // POST: HomeController/Register
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Register(VehicleOwnerRegister ownerRegister)
         {
             try
@@ -66,7 +67,7 @@ namespace VehicleManagementMVC.Controllers
 
         // POST: HomeController/Login
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Login(VehicleOwnerLogin ownerLogin)
         {
             var data = new ServiceResponse<string>();
@@ -158,7 +159,7 @@ namespace VehicleManagementMVC.Controllers
 
         // POST: HomeController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Create(AddVehicleDto addVehicle)
         {
             try
@@ -188,14 +189,32 @@ namespace VehicleManagementMVC.Controllers
         }
 
         // GET: HomeController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            var data = new ServiceResponse<GetVehicleDto>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseAddress);
+                addToken(client, TokenManagement.userToken);
+
+                HttpResponseMessage getData = await client.GetAsync("api/Vehicle/" + id);
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = getData.Content.ReadAsStringAsync().Result;
+                    data = JsonConvert.DeserializeObject<ServiceResponse<GetVehicleDto>>(results);
+                }
+                else
+                {
+                    Console.WriteLine("Error in consuming web API.");
+                }
+            }
+            return View(data);
         }
 
         // POST: HomeController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Delete(int id, GetVehicleDto vehicle)
         {
             try
@@ -250,7 +269,7 @@ namespace VehicleManagementMVC.Controllers
 
         // POST: HomeController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken()]
         public async Task<ActionResult> Edit(int id, ServiceResponse<UpdateVehicleDto> updatedVehicle)
         {
             try

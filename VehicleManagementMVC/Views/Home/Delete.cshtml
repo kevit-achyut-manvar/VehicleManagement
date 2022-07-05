@@ -1,4 +1,4 @@
-﻿@model GetVehicleDto
+﻿@model ServiceResponse<GetVehicleDto>
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,7 +8,40 @@
 
 <h3>Are you sure you want to delete this?</h3>  
 <form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Data.Id" />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Data.Id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Data.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Data.CompanyName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Data.CompanyName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Data.ModelName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Data.ModelName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Data.RTONumber)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Data.RTONumber)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Data.Class)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Data.Class)
+        </dd>
+    </dl>
     <input type="submit" value="Delete" class="btn btn-danger" /> |
     <a asp-action="Index">Back to List</a>
 </form>
